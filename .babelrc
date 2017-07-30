@@ -1,0 +1,24 @@
+{
+  "presets": [
+    "react",
+    ["env", {
+      "modules": false
+    }]
+  ],
+  "plugins": [
+    "transform-object-rest-spread",
+    "transform-class-properties"
+  ],
+  "env": {
+    "test": {
+      "presets": [
+        "react",
+        "env"
+      ],
+      "plugins": [
+        "transform-object-rest-spread",
+        "transform-class-properties"
+      ]
+    }
+  }
+}
