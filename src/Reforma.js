@@ -1,5 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {
+  reduceValues,
+  reduceErrors,
+  reduceChanged,
+  isEqual,
+  getComponentName,
+  getKeyFromEventTarget,
+} from './helpers';
 
 export default function Reforma(
   {
@@ -156,33 +164,3 @@ export const reformaShape = {
   validateValue: PropTypes.func,
   reset: PropTypes.func,
 };
-
-function reduceValues(values, key, value) {
-  return { ...values, [key]: value };
-}
-
-function reduceErrors(errors, key, message) {
-  const nextErrors = { ...errors };
-  if (message === true) {
-    delete nextErrors[key];
-  } else {
-    nextErrors[key] = message;
-  }
-  return nextErrors;
-}
-
-function reduceChanged(changed, key) {
-  return changed.indexOf(key) > -1 ? changed : changed.concat(key);
-}
-
-function getKeyFromEventTarget(e) {
-  return e.target.name || e.target.id;
-}
-
-function getComponentName(component) {
-  return component.displayName || component.name || 'Component';
-}
-
-function isEqual(o1, o2) {
-  return JSON.stringify(o1) === JSON.stringify(o2);
-}
