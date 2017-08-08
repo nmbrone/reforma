@@ -1,30 +1,73 @@
-export function reduceValues(values, key, value) {
-  return { ...values, [key]: value };
+/**
+ * @param {Object} values
+ * @param {Object} nextValues
+ * @returns {Object}
+ */
+export function reduceValues(values, nextValues) {
+  return { ...values, ...nextValues };
 }
 
-export function reduceErrors(errors, key, message) {
+/**
+ *
+ * @param {Object} errors
+ * @param {Object} messages
+ * @returns {Object}
+ */
+export function reduceErrors(errors, messages) {
   const nextErrors = { ...errors };
-  if (message === true) {
-    delete nextErrors[key];
-  } else {
-    nextErrors[key] = message;
-  }
+  Object.keys(messages).forEach(key => {
+    const message = messages[key];
+    if (message === true) {
+      delete nextErrors[key];
+    } else {
+      nextErrors[key] = message;
+    }
+  });
   return nextErrors;
 }
 
+/**
+ * @param {String[]} changed
+ * @param {(String|String[])} key
+ * @returns {String[]}
+ */
 export function reduceChanged(changed, key) {
-  return changed.indexOf(key) > -1 ? changed : changed.concat(key);
+  return uniqArray(changed.concat(key));
 }
 
-export function isEqual(o1, o2) {
+/**
+ * @param {[]} arr
+ * @returns {[]}
+ */
+export function uniqArray(arr) {
+  return arr.reduce((acc, el) => {
+    if (acc.indexOf(el) === -1) acc.push(el);
+    return acc;
+  }, []);
+}
+
+/**
+ * @param {Object} o1
+ * @param {Object} o2
+ * @returns {Boolean}
+ */
+export function isEqualObjects(o1, o2) {
   if (o1 === o2) return true;
   return JSON.stringify(o1) === JSON.stringify(o2);
 }
 
+/**
+ * @param {Event} e
+ * @returns {String}
+ */
 export function getKeyFromEventTarget(e) {
   return e.target.name || e.target.id;
 }
 
+/**
+ * @param {Function} component
+ * @returns {String}
+ */
 export function getComponentName(component) {
   return component.displayName || component.name || 'Component';
 }

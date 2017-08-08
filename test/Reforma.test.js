@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow, mount } from 'enzyme';
 import Reforma from '../src/Reforma';
 
-describe('<Reforma/> higher order component', () => {
+describe('<Reforma />', () => {
   const wrapTest = fn => jest.fn().mockImplementation(fn);
 
   const rules = {
@@ -27,6 +27,12 @@ describe('<Reforma/> higher order component', () => {
     return (
       <form>
         <input
+          type="text"
+          name="username"
+          value={values.username}
+          onChange={handleChange}
+        />
+        <input
           type="email"
           name="email"
           value={values.email}
@@ -47,6 +53,7 @@ describe('<Reforma/> higher order component', () => {
   const getWrappedForm = settings =>
     Reforma({
       mapPropsToValues: props => ({
+        username: props.username,
         email: props.email,
         password: props.password,
       }),
@@ -65,7 +72,7 @@ describe('<Reforma/> higher order component', () => {
     const WrappedForm = getWrappedForm();
     clearRulesMocks();
     wrapper = shallow(
-      <WrappedForm email="example@email.com" password="qwer" />
+      <WrappedForm email="example@email.com" password="qwer" username="" />
     );
   });
 
@@ -105,14 +112,41 @@ describe('<Reforma/> higher order component', () => {
   });
 
   test('sets multiple values', () => {
-    const values = {
+    wrapper.prop('setValues')({
       email: 'example@gmail.com',
       password: 'qwerty',
-    };
-    wrapper.prop('setValues')(values);
-    expect(wrapper.prop('values')).toEqual(values);
-    expect(wrapper.prop('changed')).toEqual(Object.keys(values));
+    });
+    expect(wrapper.prop('values')).toEqual({
+      email: 'example@gmail.com',
+      password: 'qwerty',
+      username: '',
+    });
+    expect(wrapper.prop('changed')).toEqual(['email', 'password']);
     expect(wrapper.prop('errors')).toEqual({});
+
+    wrapper.prop('setValues')({
+      email: 'example',
+      username: 'User',
+    });
+    expect(wrapper.prop('values')).toEqual({
+      email: 'example',
+      password: 'qwerty',
+      username: 'User',
+    });
+    expect(wrapper.prop('changed')).toEqual(['email', 'password', 'username']);
+    expect(wrapper.prop('errors')).toEqual({ email: rules.email.message });
+
+    wrapper.prop('setValues')({ password: 'qwe' });
+    expect(wrapper.prop('values')).toEqual({
+      email: 'example',
+      password: 'qwe',
+      username: 'User',
+    });
+    expect(wrapper.prop('changed')).toEqual(['email', 'password', 'username']);
+    expect(wrapper.prop('errors')).toEqual({
+      email: rules.email.message,
+      password: rules.password.message,
+    });
   });
 
   test('sets multiple values without validation', () => {
@@ -122,7 +156,7 @@ describe('<Reforma/> higher order component', () => {
     };
     const prevErrors = wrapper.prop('errors');
     wrapper.prop('setValues')(values, false);
-    expect(wrapper.prop('values')).toEqual(values);
+    expect(wrapper.prop('values')).toEqual({ ...values, username: '' });
     expect(wrapper.prop('changed')).toEqual(Object.keys(values));
     expect(wrapper.prop('errors')).toBe(prevErrors);
   });
@@ -147,7 +181,7 @@ describe('<Reforma/> higher order component', () => {
   });
 
   test('resets multiple errors', () => {
-    wrapper.prop('resetError')('email', 'password');
+    wrapper.prop('resetError')(['email', 'password']);
     expect(wrapper.prop('errors')).toEqual({});
   });
 
@@ -172,7 +206,7 @@ describe('<Reforma/> higher order component', () => {
         password: 'qwerty',
       },
     });
-    wrapper.prop('validateValue')('email', 'password');
+    wrapper.prop('validateValue')(['email', 'password']);
     expect(wrapper.prop('errors')).toEqual({});
     expect(rules.password.test.mock.calls[0][1]).not.toHaveProperty(
       'errors.email'
@@ -229,6 +263,7 @@ describe('<Reforma/> higher order component', () => {
     const nextProps = {
       email: 'example@gmail.com',
       password: 'qwerty',
+      username: 'User',
     };
     wrapper.setProps(nextProps);
     expect(wrapper.state()).toEqual({
@@ -248,8 +283,68 @@ describe('<Reforma/> higher order component', () => {
       email: rules.email.message,
     });
     expect(rules.email.test).toHaveBeenCalledTimes(1);
-    expect(rules.password.test).toHaveBeenCalledTimes(1);
     expect(rules.domain.test).toHaveBeenCalledTimes(0);
+    expect(rules.password.test).toHaveBeenCalledTimes(1);
+  });
+
+  test('a test should be called with right arguments', () => {
+    clearRulesMocks();
+    const WrappedForm = getWrappedForm();
+    const props = { email: 'example', password: 'qwerty', foo: 'bar' };
+    const wrapper = shallow(<WrappedForm {...props} />);
+    const expectedPayload = {
+      changed: [],
+      values: { email: 'example', password: 'qwerty' },
+      props,
+    };
+
+    expect(rules.email.test.mock.calls[0][0]).toBe('example');
+    expect(rules.email.test.mock.calls[0][1]).toEqual(expectedPayload);
+
+    expect(rules.password.test.mock.calls[0][0]).toBe('qwerty');
+    expect(rules.password.test.mock.calls[0][1]).toEqual(expectedPayload);
+
+    wrapper.prop('setValue')('email', 'example@email.com');
+    const expectedPayload2 = {
+      changed: ['email'],
+      values: { email: 'example@email.com', password: 'qwerty' },
+      props,
+    };
+    expect(rules.email.test.mock.calls[1][0]).toBe('example@email.com');
+    expect(rules.email.test.mock.calls[1][1]).toEqual(expectedPayload2);
+  });
+
+  test('errors should contain only those fields for which defined validation rules', () => {
+    expect(wrapper.prop('errors')).toHaveProperty('email');
+    expect(wrapper.prop('errors')).toHaveProperty('password');
+    expect(wrapper.prop('errors')).not.toHaveProperty('username');
+    wrapper.prop('validateValue')('username');
+    expect(wrapper.prop('errors')).not.toHaveProperty('username');
+  });
+
+  test('rule message can be a function', () => {
+    const emailRule = {
+      message: jest
+        .fn()
+        .mockImplementation(value => `<${value}> is not valid email address`),
+      test: value => value.includes('@'),
+    };
+    const WrappedForm = getWrappedForm({
+      validations: {
+        email: [emailRule],
+      },
+    });
+    const props = { email: 'example', password: 'qwerty', foo: 'bar' };
+    const wrapper = shallow(<WrappedForm {...props} />);
+    expect(emailRule.message).toHaveBeenCalledWith('example', {
+      props,
+      changed: [],
+      values: { email: 'example', password: 'qwerty' },
+    });
+    expect(wrapper.prop('errors')).toHaveProperty(
+      'email',
+      '<example> is not valid email address'
+    );
   });
 
   test('handles change event', () => {

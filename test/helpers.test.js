@@ -2,7 +2,8 @@ import {
   reduceValues,
   reduceErrors,
   reduceChanged,
-  isEqual,
+  isEqualObjects,
+  uniqArray,
   getComponentName,
   getKeyFromEventTarget,
 } from '../src/helpers';
@@ -10,12 +11,12 @@ import {
 describe('reduceValues', () => {
   const currentValues = { email: 'example@email.com' };
   test('returns next values', () => {
-    let values = reduceValues(currentValues, 'password', 'qwerty');
+    let values = reduceValues(currentValues, { password: 'qwerty' });
     expect(values).toEqual({
       email: 'example@email.com',
       password: 'qwerty',
     });
-    values = reduceValues(values, 'email', '');
+    values = reduceValues(values, { email: '' });
     expect(values).toEqual({
       email: '',
       password: 'qwerty',
@@ -26,16 +27,16 @@ describe('reduceValues', () => {
 describe('reduceErrors', () => {
   const currentErrors = {};
   test('returns next errors', () => {
-    let errors = reduceErrors(currentErrors, 'email', 'Not valid email');
+    let errors = reduceErrors(currentErrors, { email: 'Not valid email' });
     expect(errors).toEqual({
       email: 'Not valid email',
     });
-    errors = reduceErrors(errors, 'password', 'Required field');
+    errors = reduceErrors(errors, { password: 'Required field' });
     expect(errors).toEqual({
       email: 'Not valid email',
       password: 'Required field',
     });
-    errors = reduceErrors(errors, 'email', true);
+    errors = reduceErrors(errors, { email: true });
     expect(errors).toEqual({
       password: 'Required field',
     });
@@ -51,16 +52,24 @@ describe('reduceChanged', () => {
     expect(changed).toEqual(['email', 'password']);
     changed = reduceChanged(changed, 'email');
     expect(changed).toEqual(['email', 'password']);
+    changed = reduceChanged(changed, ['password', 'username']);
+    expect(changed).toEqual(['email', 'password', 'username']);
   });
 });
 
-describe('isEqual', () => {
+describe('isEqualObjects', () => {
   test('checks equality of two plain objects', () => {
     const obj = { a: 1 };
-    expect(isEqual(obj, obj)).toBe(true);
-    expect(isEqual({ a: 1, b: 2 }, { a: 1, b: 2 })).toBe(true);
-    expect(isEqual({ a: 1, b: 2 }, { a: 1 })).toBe(false);
-    expect(isEqual({ a: 1, b: 2 }, { b: 2, a: 1 })).toBe(false);
+    expect(isEqualObjects(obj, obj)).toBe(true);
+    expect(isEqualObjects({ a: 1, b: 2 }, { a: 1, b: 2 })).toBe(true);
+    expect(isEqualObjects({ a: 1, b: 2 }, { a: 1 })).toBe(false);
+    expect(isEqualObjects({ a: 1, b: 2 }, { b: 2, a: 1 })).toBe(false);
+  });
+});
+
+describe('uniqArray', () => {
+  test('creates a duplicate-free version of an array', () => {
+    expect(uniqArray([1, 4, '5', 1, 4, '4', '5'])).toEqual([1, 4, '5', '4']);
   });
 });
 

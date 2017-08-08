@@ -1,10 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import {
   reduceValues,
   reduceErrors,
   reduceChanged,
-  isEqual,
+  isEqualObjects,
   getComponentName,
   getKeyFromEventTarget,
 } from './helpers';
@@ -17,9 +16,16 @@ export default function Reforma(
     validateWhenPropsChange = false,
   } = {}
 ) {
+  /**
+   * Validate single value.
+   * @param {String} key - Key for rules.
+   * @param {*} value - Value to validate.
+   * @param {Object} payload - Payload for validation rule.
+   * @returns {(Boolean|String)} - 'true' if a value passed validation, otherwise error message.
+   */
   const _validateValue = (key, value, payload) => {
-    if (validations.hasOwnProperty(key)) {
-      const rules = validations[key];
+    const rules = validations[key];
+    if (rules && rules.length) {
       for (let i = 0, len = rules.length; i < len; i++) {
         const { test, message } = rules[i];
         if (test(value, payload) === true) continue;
@@ -31,19 +37,29 @@ export default function Reforma(
     return true;
   };
 
+  /**
+   * Validate multiple values.
+   * @param {Object} values - Values to validate.
+   * @param {Object} payload - Payload for validation rule.
+   * @returns {Object} - Validations result.
+   */
   const _validateValues = (values, payload) => {
-    return Object.keys(values).reduce((errors, key) => {
-      const message = _validateValue(key, values[key], payload);
-      if (message !== true) errors[key] = message;
-      return errors;
+    return Object.keys(values).reduce((acc, key) => {
+      acc[key] = _validateValue(key, values[key], payload);
+      return acc;
     }, {});
   };
 
+  /**
+   * Get Reforma state from component props.
+   * @param {Object} props - Component props.
+   * @returns {{values: Object, errors: Object, changed: []}}
+   */
   const _getStateFromProps = props => {
     const values = mapPropsToValues(props);
     const changed = [];
     const errors = validateWhenPropsChange
-      ? _validateValues(values, { values, errors: {}, changed, props })
+      ? reduceErrors({}, _validateValues(values, { values, changed, props }))
       : {};
     return { values, errors, changed };
   };
@@ -55,66 +71,86 @@ export default function Reforma(
         this.state = _getStateFromProps(props);
       }
 
-      _getPayload(nextState) {
-        return {
-          ...this.state,
-          ...nextState,
-          props: this.props,
-        };
-      }
-
+      /**
+       * Set and (optional) validate value.
+       * @param {string} key - Key for value.
+       * @param {*} value - Value to set.
+       * @param {Boolean} [validate=true] - Optional validation.
+       */
       setValue = (key, value, validate = true) => {
-        const nextState = {
-          values: reduceValues(this.state.values, key, value),
-          changed: reduceChanged(this.state.changed, key),
-        };
-        if (validate) {
-          const payload = this._getPayload(nextState);
-          const message = _validateValue(key, value, payload);
-          nextState.errors = reduceErrors(this.state.errors, key, message);
-        }
-        this.setState(nextState);
+        this.setValues({ [key]: value }, validate);
       };
 
+      /**
+       * Set and (optional) validate multiple value.
+       * @param {Object} values - Values.
+       * @param {Boolean} [validate=true] - Optional validation.
+       */
       setValues = (values, validate = true) => {
         const nextState = {
-          values: { ...this.state.values, ...values },
-          changed: Object.keys(values),
+          values: reduceValues(this.state.values, values),
+          changed: reduceChanged(this.state.changed, Object.keys(values)),
         };
         if (validate) {
           const payload = this._getPayload(nextState);
-          nextState.errors = _validateValues(values, payload);
+          nextState.errors = reduceErrors(
+            this.state.errors,
+            _validateValues(values, payload)
+          );
         }
         this.setState(nextState);
       };
 
-      resetError = (...keys) => {
-        const errors = keys.reduce(
-          (acc, key) => reduceErrors(acc, key, true),
-          this.state.errors
-        );
+      /**
+       * Reset error/errors by given key/keys.
+       * @param {(String|String[])} key - Key/keys for which need to reset errors.
+       */
+      resetError = key => {
+        let errors = [].concat(key).reduce((acc, key) => {
+          acc[key] = true;
+          return acc;
+        }, {});
+        errors = reduceErrors(this.state.errors, errors);
         this.setState({ errors });
       };
 
-      validateValue = (...keys) => {
-        const errors = keys.reduce((acc, key) => {
-          const value = this.state.values[key];
-          const payload = this._getPayload({ errors: acc });
-          const message = _validateValue(key, value, payload);
-          return reduceErrors(acc, key, message);
-        }, this.state.errors);
+      /**
+       * Validate value/values by given key/keys.
+       * @param {(String|String[])} key - Key/keys for which need to reset errors.
+       */
+      validateValue = key => {
+        const values = [].concat(key).reduce((acc, k) => {
+          acc[k] = this.state.values[k];
+          return acc;
+        }, {});
+        let errors = _validateValues(values, this._getPayload());
+        errors = reduceErrors(this.state.errors, errors);
         this.setState({ errors });
       };
 
+      /**
+       * Reset Reforma state.
+       * @param {Object} [nextProps=this.props] - Component props.
+       */
       reset = (nextProps = this.props) => {
         this.setState(_getStateFromProps(nextProps));
       };
 
+      /**
+       * Helper to handle field change event.
+       * Will update and validate value.
+       * @param {(SyntheticEvent|Event)} e - Event object.
+       */
       handleChange = e => {
         const key = getKeyFromEventTarget(e);
         this.setValue(key, e.target.value);
       };
 
+      /**
+       * Helper to handle field change event.
+       * Will only update value.
+       * @param {(SyntheticEvent|Event)} e - Event object.
+       */
       handleOnlyChange = e => {
         const key = getKeyFromEventTarget(e);
         this.setValue(key, e.target.value, false);
@@ -135,11 +171,20 @@ export default function Reforma(
           />
         );
       }
+
+      _getPayload(payload) {
+        return {
+          values: this.state.values,
+          changed: this.state.changed,
+          props: this.props,
+          ...payload,
+        };
+      }
     }
 
     if (resetWhenPropsChange) {
       Reforma.prototype.componentWillReceiveProps = function(nextProps) {
-        const hasChanged = !isEqual(
+        const hasChanged = !isEqualObjects(
           mapPropsToValues(nextProps),
           mapPropsToValues(this.props)
         );
@@ -151,16 +196,3 @@ export default function Reforma(
     return Reforma;
   };
 }
-
-export const reformaShape = {
-  values: PropTypes.objectOf(PropTypes.string),
-  errors: PropTypes.objectOf(PropTypes.string),
-  changed: PropTypes.arrayOf(PropTypes.string),
-  handleChange: PropTypes.func,
-  handleOnlyChange: PropTypes.func,
-  setValue: PropTypes.func,
-  setValues: PropTypes.func,
-  resetError: PropTypes.func,
-  validateValue: PropTypes.func,
-  reset: PropTypes.func,
-};

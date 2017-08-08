@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<Reforma/> higher order component renders given wrapped component 1`] = `
+exports[`<Reforma /> renders given wrapped component 1`] = `
 <Form
   changed={Array []}
   email="example@email.com"
@@ -17,17 +17,19 @@ exports[`<Reforma/> higher order component renders given wrapped component 1`] =
   resetError={[Function]}
   setValue={[Function]}
   setValues={[Function]}
+  username=""
   validateValue={[Function]}
   values={
     Object {
       "email": "example@email.com",
       "password": "qwer",
+      "username": "",
     }
   }
 />
 `;
 
-exports[`<Reforma/> higher order component renders given wrapped component when settings omitted 1`] = `
+exports[`<Reforma /> renders given wrapped component when settings omitted 1`] = `
 <Form
   changed={Array []}
   errors={Object {}}
