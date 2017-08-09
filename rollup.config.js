@@ -2,21 +2,17 @@ import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import babel from 'rollup-plugin-babel';
 import uglify from 'rollup-plugin-uglify';
+import replace from 'rollup-plugin-replace';
 import filesize from 'rollup-plugin-filesize';
 
-const isProduction = process.env.NODE_ENV === 'production';
+const env = process.env.NODE_ENV;
 
-export default {
-  entry: 'src/Reforma.js',
+const config = {
   format: 'umd',
-  sourceMap: true,
   moduleName: 'Reforma',
-  external: ['react', 'prop-types', 'lodash.isequal'],
-  exports: 'named',
+  external: ['react'],
   globals: {
     react: 'React',
-    'prop-types': 'PropTypes',
-    'lodash.isequal': 'isEqual',
   },
   plugins: [
     resolve(),
@@ -24,6 +20,24 @@ export default {
     babel({
       exclude: 'node_modules/**',
     }),
-  ].concat(isProduction ? [uglify(), filesize()] : []),
-  dest: `dist/Reforma${isProduction ? '.min' : ''}.js`,
+    replace({
+      'process.env.NODE_ENV': JSON.stringify(env),
+    }),
+    filesize(),
+  ],
 };
+
+if (env === 'production') {
+  config.plugins.push(
+    uglify({
+      compress: {
+        pure_getters: true,
+        unsafe: true,
+        unsafe_comps: true,
+        warnings: false,
+      },
+    })
+  );
+}
+
+export default config;

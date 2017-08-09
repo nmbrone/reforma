@@ -2,15 +2,28 @@
   "name": "reforma",
   "version": "0.1.0",
   "description": "Painless React forms",
-  "main": "index.js",
-  "author": "nmbrone <sergey.snozyk@gmail.com>",
+  "main": "lib/Reforma.js",
+  "files": [
+    "dist",
+    "lib",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nmbrone/reforma.git"
+  },
+  "author": "Sergey Snozyk <sergey.snozyk@gmail.com> (https://github.com/nmbrone)",
   "license": "MIT",
   "scripts": {
-    "test": "jest",
-    "build": "rimraf dist && cross-env NODE_ENV=production rollup -c",
-    "build:dev": "rimraf dist && cross-env NODE_ENV=development rollup -c"
+    "clean": "rimraf dist es lib coverage",
+    "test": "cross-env BABEL_ENV=cjs jest",
+    "build:cjs": "cross-env BABEL_ENV=cjs babel src --out-dir lib",
+    "build:umd": "cross-env BABEL_ENV=umd NODE_ENV=development rollup -c -i src/Reforma.js -o dist/Reforma.js",
+    "build:umd:min": "cross-env BABEL_ENV=umd NODE_ENV=production rollup -c -i src/Reforma.js -o dist/Reforma.min.js",
+    "build": "npm run build:cjs && npm run build:umd && npm run build:umd:min"
   },
   "devDependencies": {
+    "babel-cli": "^6.24.1",
     "babel-eslint": "^7.2.3",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
@@ -34,6 +47,7 @@
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-filesize": "^1.4.2",
     "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-replace": "^1.1.1",
     "rollup-plugin-uglify": "^2.0.1"
   },
   "peerDependencies": {

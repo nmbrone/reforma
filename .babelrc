@@ -1,32 +1,6 @@
 {
   "env": {
-    "production": {
-      "presets": [
-        "react",
-        ["env", {
-          "modules": false
-        }]
-      ],
-      "plugins": [
-        "transform-object-rest-spread",
-        "transform-class-properties",
-        "external-helpers"
-      ]
-    },
-    "development": {
-      "presets": [
-        "react",
-        ["env", {
-          "modules": false
-        }]
-      ],
-      "plugins": [
-        "transform-object-rest-spread",
-        "transform-class-properties",
-        "external-helpers"
-      ]
-    },
-    "test": {
+    "cjs": {
       "presets": [
         "react",
         "env"
@@ -34,6 +8,20 @@
       "plugins": [
         "transform-object-rest-spread",
         "transform-class-properties"
+      ]
+    },
+    "umd": {
+      "presets": [
+        "react",
+        ["env", {
+          "modules": false,
+          "loose": true
+        }]
+      ],
+      "plugins": [
+        "transform-object-rest-spread",
+        "transform-class-properties",
+        "external-helpers"
       ]
     }
   }
