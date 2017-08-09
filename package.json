@@ -20,7 +20,8 @@
     "build:cjs": "cross-env BABEL_ENV=cjs babel src --out-dir lib",
     "build:umd": "cross-env BABEL_ENV=umd NODE_ENV=development rollup -c -i src/Reforma.js -o dist/Reforma.js",
     "build:umd:min": "cross-env BABEL_ENV=umd NODE_ENV=production rollup -c -i src/Reforma.js -o dist/Reforma.min.js",
-    "build": "npm run build:cjs && npm run build:umd && npm run build:umd:min"
+    "build": "npm run build:cjs && npm run build:umd && npm run build:umd:min",
+    "prepare": "npm run clean && npm run test && npm run build"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
