@@ -5,7 +5,8 @@
   "main": "lib/Refova.js",
   "files": [
     "dist",
-    "lib"
+    "lib",
+    "src"
   ],
   "repository": {
     "type": "git",
