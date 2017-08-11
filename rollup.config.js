@@ -9,7 +9,7 @@ const env = process.env.NODE_ENV;
 
 const config = {
   format: 'umd',
-  moduleName: 'Reforma',
+  moduleName: 'Refova',
   external: ['react'],
   globals: {
     react: 'React',

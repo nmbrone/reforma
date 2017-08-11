@@ -8,7 +8,7 @@ import {
   getKeyFromEventTarget,
 } from './helpers';
 
-export default function Reforma(
+export default function Refova(
   {
     mapPropsToValues = () => ({}),
     validations = {},
@@ -51,7 +51,7 @@ export default function Reforma(
   };
 
   /**
-   * Get Reforma state from component props.
+   * Get Refova state from component props.
    * @param {Object} props - Component props.
    * @returns {{values: Object, errors: Object, changed: []}}
    */
@@ -65,7 +65,7 @@ export default function Reforma(
   };
 
   return Wrapped => {
-    class Reforma extends React.Component {
+    class Refova extends React.Component {
       constructor(props) {
         super(props);
         this.state = _getStateFromProps(props);
@@ -129,7 +129,7 @@ export default function Reforma(
       };
 
       /**
-       * Reset Reforma state.
+       * Reset Refova state.
        * @param {Object} [nextProps=this.props] - Component props.
        */
       reset = (nextProps = this.props) => {
@@ -183,7 +183,7 @@ export default function Reforma(
     }
 
     if (resetWhenPropsChange) {
-      Reforma.prototype.componentWillReceiveProps = function(nextProps) {
+      Refova.prototype.componentWillReceiveProps = function(nextProps) {
         const hasChanged = !isEqualObjects(
           mapPropsToValues(nextProps),
           mapPropsToValues(this.props)
@@ -192,7 +192,7 @@ export default function Reforma(
       };
     }
 
-    Reforma.displayName = `Reforma(${getComponentName(Wrapped)})`;
-    return Reforma;
+    Refova.displayName = `Refova(${getComponentName(Wrapped)})`;
+    return Refova;
   };
 }

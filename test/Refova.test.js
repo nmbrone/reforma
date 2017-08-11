@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
-import Reforma from '../src/Reforma';
+import Refova from '../src/Refova';
 
-describe('<Reforma />', () => {
+describe('<Refova />', () => {
   const wrapTest = fn => jest.fn().mockImplementation(fn);
 
   const rules = {
@@ -50,8 +50,8 @@ describe('<Reforma />', () => {
     );
   };
 
-  const getWrappedForm = settings =>
-    Reforma({
+  const getWrappedForm = options =>
+    Refova({
       mapPropsToValues: props => ({
         username: props.username,
         email: props.email,
@@ -63,7 +63,7 @@ describe('<Reforma />', () => {
       },
       resetWhenPropsChange: true,
       validateWhenPropsChange: true,
-      ...settings,
+      ...options,
     })(Form);
 
   let wrapper;
@@ -80,8 +80,8 @@ describe('<Reforma />', () => {
     expect(wrapper).toMatchSnapshot();
   });
 
-  test('renders given wrapped component when settings omitted', () => {
-    const WrappedForm = Reforma()(Form);
+  test('renders given wrapped component when options omitted', () => {
+    const WrappedForm = Refova()(Form);
     const wrapper = shallow(<WrappedForm />);
     expect(wrapper).toMatchSnapshot();
   });
