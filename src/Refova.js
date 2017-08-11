@@ -115,17 +115,20 @@ export default function Refova(
       };
 
       /**
-       * Validate value/values by given key/keys.
-       * @param {(String|String[])} key - Key/keys for which need to reset errors.
+       * Validate all values, or only values by given keys.
+       * @param {(String|String[])} [keys] - Keys for values which need to be validated.
+       * If omitted, then all stored values will be validated.
+       * @returns {Boolean} - true if all values are valid, otherwise false.
        */
-      validateValue = key => {
-        const values = [].concat(key).reduce((acc, k) => {
+      validate = (keys = Object.keys(this.state.values)) => {
+        const values = [].concat(keys).reduce((acc, k) => {
           acc[k] = this.state.values[k];
           return acc;
         }, {});
         let errors = _validateValues(values, this._getPayload());
         errors = reduceErrors(this.state.errors, errors);
         this.setState({ errors });
+        return Object.keys(errors).length === 0;
       };
 
       /**
@@ -166,7 +169,8 @@ export default function Refova(
             setValue={this.setValue}
             setValues={this.setValues}
             resetError={this.resetError}
-            validateValue={this.validateValue}
+            validateValue={this.validate}
+            validate={this.validate}
             reset={this.reset}
           />
         );

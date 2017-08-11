@@ -185,13 +185,26 @@ describe('<Refova />', () => {
     expect(wrapper.prop('errors')).toEqual({});
   });
 
-  test('validates value', () => {
+  test('validates all stored values', () => {
+    clearRulesMocks();
+    expect(wrapper.prop('validate')()).toBe(false);
+    wrapper.setState({
+      values: {
+        email: 'example@gmail.com',
+        password: 'qwerty',
+      },
+    });
+    expect(wrapper.prop('validate')()).toBe(true);
+    expect(wrapper.prop('errors')).toEqual({});
+  });
+
+  test('validates one value', () => {
     wrapper.setState({
       values: {
         email: 'example',
       },
     });
-    wrapper.prop('validateValue')('email');
+    wrapper.prop('validate')('email');
     expect(wrapper.prop('errors')).toEqual({
       email: rules.email.message,
       password: rules.password.message,
@@ -204,13 +217,11 @@ describe('<Refova />', () => {
       values: {
         email: 'example@gmail.com',
         password: 'qwerty',
+        username: 'User',
       },
     });
-    wrapper.prop('validateValue')(['email', 'password']);
+    wrapper.prop('validate')(['email', 'password']);
     expect(wrapper.prop('errors')).toEqual({});
-    expect(rules.password.test.mock.calls[0][1]).not.toHaveProperty(
-      'errors.email'
-    );
   });
 
   test('resets state', () => {

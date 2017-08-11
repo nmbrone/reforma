@@ -18,6 +18,7 @@ exports[`<Refova /> renders given wrapped component 1`] = `
   setValue={[Function]}
   setValues={[Function]}
   username=""
+  validate={[Function]}
   validateValue={[Function]}
   values={
     Object {
@@ -39,6 +40,7 @@ exports[`<Refova /> renders given wrapped component when options omitted 1`] = `
   resetError={[Function]}
   setValue={[Function]}
   setValues={[Function]}
+  validate={[Function]}
   validateValue={[Function]}
   values={Object {}}
 />
