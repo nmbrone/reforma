@@ -169,7 +169,6 @@ export default function Refova(
             setValue={this.setValue}
             setValues={this.setValues}
             resetError={this.resetError}
-            validateValue={this.validate}
             validate={this.validate}
             reset={this.reset}
           />

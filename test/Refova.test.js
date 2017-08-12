@@ -329,7 +329,7 @@ describe('<Refova />', () => {
     expect(wrapper.prop('errors')).toHaveProperty('email');
     expect(wrapper.prop('errors')).toHaveProperty('password');
     expect(wrapper.prop('errors')).not.toHaveProperty('username');
-    wrapper.prop('validateValue')('username');
+    wrapper.prop('validate')('username');
     expect(wrapper.prop('errors')).not.toHaveProperty('username');
   });
 
