@@ -8,6 +8,13 @@
     "lib",
     "src"
   ],
+  "keywords": [
+    "react",
+    "form",
+    "forms",
+    "validation",
+    "hoc"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/nmbrone/refova.git"
