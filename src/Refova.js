@@ -5,7 +5,7 @@ import {
   reduceChanged,
   isEqualObjects,
   getComponentName,
-  getKeyFromEventTarget,
+  getKeyValueFromElement,
 } from './helpers';
 
 export default function Refova(
@@ -145,8 +145,8 @@ export default function Refova(
        * @param {(SyntheticEvent|Event)} e - Event object.
        */
       handleChange = e => {
-        const key = getKeyFromEventTarget(e);
-        this.setValue(key, e.target.value);
+        const { key, value } = getKeyValueFromElement(e.target);
+        this.setValue(key, value);
       };
 
       /**
@@ -155,8 +155,8 @@ export default function Refova(
        * @param {(SyntheticEvent|Event)} e - Event object.
        */
       handleOnlyChange = e => {
-        const key = getKeyFromEventTarget(e);
-        this.setValue(key, e.target.value, false);
+        const { key, value } = getKeyValueFromElement(e.target);
+        this.setValue(key, value, false);
       };
 
       render() {

@@ -57,11 +57,13 @@ export function isEqualObjects(o1, o2) {
 }
 
 /**
- * @param {Event} e
- * @returns {String}
+ * @param {HTMLInputElement} el
  */
-export function getKeyFromEventTarget(e) {
-  return e.target.name || e.target.id;
+export function getKeyValueFromElement(el) {
+  return {
+    key: el.name || el.id,
+    value: el.type === 'checkbox' ? el.checked : el.value,
+  };
 }
 
 /**

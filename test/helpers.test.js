@@ -5,7 +5,7 @@ import {
   isEqualObjects,
   uniqArray,
   getComponentName,
-  getKeyFromEventTarget,
+  getKeyValueFromElement,
 } from '../src/helpers';
 
 describe('reduceValues', () => {
@@ -73,18 +73,33 @@ describe('uniqArray', () => {
   });
 });
 
-describe('getKeyFromEventTarget', () => {
-  test('returns key from event target', () => {
-    expect(
-      getKeyFromEventTarget({
-        target: { name: 'foo', id: 'bar' },
-      })
-    ).toBe('foo');
-    expect(
-      getKeyFromEventTarget({
-        target: { id: 'bar' },
-      })
-    ).toBe('bar');
+describe('getKeyValueFromElement', () => {
+  test('returns key and value from HTMLInputElement', () => {
+    const inputEl = document.createElement('input');
+    inputEl.name = 'foo';
+    inputEl.value = 'somestring';
+    expect(getKeyValueFromElement(inputEl)).toEqual({
+      key: 'foo',
+      value: 'somestring',
+    });
+    inputEl.name = 'bar';
+    expect(getKeyValueFromElement(inputEl)).toEqual({
+      key: 'bar',
+      value: 'somestring',
+    });
+
+    const checkboxEl = document.createElement('input');
+    checkboxEl.type = 'checkbox';
+    checkboxEl.name = 'foo';
+    expect(getKeyValueFromElement(checkboxEl)).toEqual({
+      key: 'foo',
+      value: false,
+    });
+    checkboxEl.checked = true;
+    expect(getKeyValueFromElement(checkboxEl)).toEqual({
+      key: 'foo',
+      value: true,
+    });
   });
 });
 
