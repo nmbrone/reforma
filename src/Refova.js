@@ -76,17 +76,20 @@ export default function Refova(
        * @param {string} key - Key for value.
        * @param {*} value - Value to set.
        * @param {Boolean} [validate=true] - Optional validation.
+       * @param {Function} cb - The callback function for react setState.
        */
-      setValue = (key, value, validate = true) => {
-        this.setValues({ [key]: value }, validate);
+      setValue = (key, value, validate = true, cb) => {
+        this.setValues({ [key]: value }, validate, cb);
       };
 
       /**
        * Set and (optional) validate multiple value.
        * @param {Object} values - Values.
        * @param {Boolean} [validate=true] - Optional validation.
+       * @param {Function} cb - The callback function for react setState.
+       * @callback
        */
-      setValues = (values, validate = true) => {
+      setValues = (values, validate = true, cb) => {
         const nextState = {
           values: reduceValues(this.state.values, values),
           changed: reduceChanged(this.state.changed, Object.keys(values)),
@@ -98,7 +101,7 @@ export default function Refova(
             _validateValues(values, payload)
           );
         }
-        this.setState(nextState);
+        this.setState(nextState, cb);
       };
 
       /**
