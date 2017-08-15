@@ -76,7 +76,7 @@ describe('uniqArray', () => {
 describe('getKeyValueFromElement', () => {
   test('returns key and value from HTMLInputElement', () => {
     const inputEl = document.createElement('input');
-    inputEl.name = 'foo';
+    inputEl.id = 'foo';
     inputEl.value = 'somestring';
     expect(getKeyValueFromElement(inputEl)).toEqual({
       key: 'foo',
