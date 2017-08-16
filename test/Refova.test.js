@@ -62,7 +62,7 @@ describe('<Refova />', () => {
         password: [rules.password],
       },
       resetWhenPropsChange: true,
-      validateWhenPropsChange: true,
+      initialValidation: true,
       ...options,
     })(Form);
 
@@ -88,7 +88,7 @@ describe('<Refova />', () => {
 
   test('renders given wrapped component without initial validations', () => {
     const WrappedForm = getWrappedForm({
-      validateWhenPropsChange: false,
+      initialValidation: false,
     });
     const wrapper = shallow(
       <WrappedForm email="example@email.com" password="qwer" />
@@ -251,7 +251,7 @@ describe('<Refova />', () => {
 
   test('resets state with next props without validation', () => {
     const WrappedForm = getWrappedForm({
-      validateWhenPropsChange: false,
+      initialValidation: false,
     });
     const wrapper = shallow(
       <WrappedForm email="example@gmail.com" password="qwerty" />

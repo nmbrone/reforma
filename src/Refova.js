@@ -13,7 +13,7 @@ export default function Refova(
     mapPropsToValues = () => ({}),
     validations = {},
     resetWhenPropsChange = true,
-    validateWhenPropsChange = false,
+    initialValidation = false,
   } = {}
 ) {
   /**
@@ -58,7 +58,7 @@ export default function Refova(
   const _getStateFromProps = props => {
     const values = mapPropsToValues(props);
     const changed = [];
-    const errors = validateWhenPropsChange
+    const errors = initialValidation
       ? reduceErrors({}, _validateValues(values, { values, changed, props }))
       : {};
     return { values, errors, changed };
