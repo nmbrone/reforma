@@ -98,7 +98,7 @@ export default function Refova(
           const payload = this._getPayload(nextState);
           nextState.errors = reduceErrors(
             this.state.errors,
-            _validateValues(values, payload)
+            _validateValues(nextState.values, payload)
           );
         }
         this.setState(nextState, cb);

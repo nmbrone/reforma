@@ -94,6 +94,7 @@ describe('<Refova />', () => {
       <WrappedForm email="example@email.com" password="qwer" />
     );
     expect(wrapper.prop('errors')).toEqual({});
+    expect(wrapper.prop('isValid')).toEqual(false);
   });
 
   test('sets value', () => {
@@ -103,6 +104,15 @@ describe('<Refova />', () => {
     expect(wrapper.prop('changed')).toContain('email');
     expect(wrapper.prop('errors')).not.toHaveProperty('email');
     expect(wrapper.prop('isValid')).toBe(false);
+  });
+
+  test('validates all stored values even if updates only one of them', () => {
+    clearRulesMocks();
+    const value = 'example@gmail.com';
+    wrapper.prop('setValue')('email', value);
+    Object.values(rules).forEach(({ test }) => {
+      expect(test).toHaveBeenCalled();
+    });
   });
 
   test('sets value without validation', () => {
