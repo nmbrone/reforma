@@ -102,6 +102,7 @@ describe('<Refova />', () => {
     expect(wrapper.prop('values').email).toBe(value);
     expect(wrapper.prop('changed')).toContain('email');
     expect(wrapper.prop('errors')).not.toHaveProperty('email');
+    expect(wrapper.prop('isValid')).toBe(false);
   });
 
   test('sets value without validation', () => {
@@ -109,6 +110,7 @@ describe('<Refova />', () => {
     wrapper.prop('setValue')('email', value, false);
     expect(wrapper.prop('values').email).toBe(value);
     expect(wrapper.prop('errors')).toHaveProperty('email');
+    expect(wrapper.prop('isValid')).toBe(false);
   });
 
   test('sets multiple values', () => {
@@ -123,6 +125,7 @@ describe('<Refova />', () => {
     });
     expect(wrapper.prop('changed')).toEqual(['email', 'password']);
     expect(wrapper.prop('errors')).toEqual({});
+    expect(wrapper.prop('isValid')).toBe(true);
 
     wrapper.prop('setValues')({
       email: 'example',
@@ -135,6 +138,7 @@ describe('<Refova />', () => {
     });
     expect(wrapper.prop('changed')).toEqual(['email', 'password', 'username']);
     expect(wrapper.prop('errors')).toEqual({ email: rules.email.message });
+    expect(wrapper.prop('isValid')).toBe(false);
 
     wrapper.prop('setValues')({ password: 'qwe' });
     expect(wrapper.prop('values')).toEqual({
@@ -147,6 +151,7 @@ describe('<Refova />', () => {
       email: rules.email.message,
       password: rules.password.message,
     });
+    expect(wrapper.prop('isValid')).toBe(false);
   });
 
   test('sets multiple values without validation', () => {
@@ -159,6 +164,7 @@ describe('<Refova />', () => {
     expect(wrapper.prop('values')).toEqual({ ...values, username: '' });
     expect(wrapper.prop('changed')).toEqual(Object.keys(values));
     expect(wrapper.prop('errors')).toBe(prevErrors);
+    expect(wrapper.prop('isValid')).toBe(false);
   });
 
   test('merges new values with old ones', () => {
@@ -183,6 +189,7 @@ describe('<Refova />', () => {
   test('resets multiple errors', () => {
     wrapper.prop('resetError')(['email', 'password']);
     expect(wrapper.prop('errors')).toEqual({});
+    expect(wrapper.prop('isValid')).toBe(true);
   });
 
   test('validates all stored values', () => {
@@ -196,6 +203,7 @@ describe('<Refova />', () => {
     });
     expect(wrapper.prop('validate')()).toBe(true);
     expect(wrapper.prop('errors')).toEqual({});
+    expect(wrapper.prop('isValid')).toBe(true);
   });
 
   test('validates one value', () => {

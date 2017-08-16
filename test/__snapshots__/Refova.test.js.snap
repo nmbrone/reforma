@@ -12,6 +12,7 @@ exports[`<Refova /> renders given wrapped component 1`] = `
   }
   handleChange={[Function]}
   handleOnlyChange={[Function]}
+  isValid={false}
   password="qwer"
   reset={[Function]}
   resetError={[Function]}
@@ -35,6 +36,7 @@ exports[`<Refova /> renders given wrapped component when options omitted 1`] = `
   errors={Object {}}
   handleChange={[Function]}
   handleOnlyChange={[Function]}
+  isValid={false}
   reset={[Function]}
   resetError={[Function]}
   setValue={[Function]}

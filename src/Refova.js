@@ -163,10 +163,13 @@ export default function Refova(
       };
 
       render() {
+        const hasErrors = Object.keys(this.state.errors).length > 0;
+        const hasChange = this.state.changed.length > 0;
         return (
           <Wrapped
             {...this.props}
             {...this.state}
+            isValid={initialValidation ? !hasErrors : hasChange && !hasErrors}
             handleChange={this.handleChange}
             handleOnlyChange={this.handleOnlyChange}
             setValue={this.setValue}
