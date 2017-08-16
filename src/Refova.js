@@ -14,6 +14,7 @@ export default function Refova(
     validations = {},
     resetWhenPropsChange = true,
     initialValidation = false,
+    oneByOne = false,
   } = {}
 ) {
   /**
@@ -98,7 +99,7 @@ export default function Refova(
           const payload = this._getPayload(nextState);
           nextState.errors = reduceErrors(
             this.state.errors,
-            _validateValues(nextState.values, payload)
+            _validateValues(oneByOne ? values : nextState.values, payload)
           );
         }
         this.setState(nextState, cb);

@@ -63,6 +63,7 @@ describe('<Refova />', () => {
       },
       resetWhenPropsChange: true,
       initialValidation: true,
+      oneByOne: false,
       ...options,
     })(Form);
 
@@ -76,25 +77,30 @@ describe('<Refova />', () => {
     );
   });
 
-  test('renders given wrapped component', () => {
+  test('renders and pass down props', () => {
     expect(wrapper).toMatchSnapshot();
   });
 
-  test('renders given wrapped component when options omitted', () => {
+  test('renders without options', () => {
     const WrappedForm = Refova()(Form);
     const wrapper = shallow(<WrappedForm />);
     expect(wrapper).toMatchSnapshot();
   });
 
-  test('renders given wrapped component without initial validations', () => {
-    const WrappedForm = getWrappedForm({
-      initialValidation: false,
-    });
-    const wrapper = shallow(
-      <WrappedForm email="example@email.com" password="qwer" />
-    );
+  test('renders properly with/without initial validations', () => {
+    const props = {
+      email: 'example@gmail.com',
+      password: 'qwerty',
+    };
+    const WrappedForm = getWrappedForm({ initialValidation: true });
+    const WrappedForm2 = getWrappedForm({ initialValidation: false });
+    const wrapper = shallow(<WrappedForm {...props} />);
+    const wrapper2 = shallow(<WrappedForm2 {...props} />);
+
     expect(wrapper.prop('errors')).toEqual({});
-    expect(wrapper.prop('isValid')).toEqual(false);
+    expect(wrapper.prop('isValid')).toEqual(true);
+    expect(wrapper2.prop('errors')).toEqual({});
+    expect(wrapper2.prop('isValid')).toEqual(false);
   });
 
   test('sets value', () => {
@@ -104,15 +110,6 @@ describe('<Refova />', () => {
     expect(wrapper.prop('changed')).toContain('email');
     expect(wrapper.prop('errors')).not.toHaveProperty('email');
     expect(wrapper.prop('isValid')).toBe(false);
-  });
-
-  test('validates all stored values even if updates only one of them', () => {
-    clearRulesMocks();
-    const value = 'example@gmail.com';
-    wrapper.prop('setValue')('email', value);
-    Object.values(rules).forEach(({ test }) => {
-      expect(test).toHaveBeenCalled();
-    });
   });
 
   test('sets value without validation', () => {
@@ -175,6 +172,24 @@ describe('<Refova />', () => {
     expect(wrapper.prop('changed')).toEqual(Object.keys(values));
     expect(wrapper.prop('errors')).toBe(prevErrors);
     expect(wrapper.prop('isValid')).toBe(false);
+  });
+
+  test('validates all stored values when some values/values being updated', () => {
+    clearRulesMocks();
+    wrapper.prop('setValue')('email', 'example@gmail.com');
+    Object.values(rules).forEach(({ test }) => {
+      expect(test).toHaveBeenCalled();
+    });
+  });
+
+  test('validates only updated values', () => {
+    const WrappedForm = getWrappedForm({ oneByOne: true });
+    const wrapper = shallow(<WrappedForm email="" password="" />);
+    clearRulesMocks();
+    wrapper.prop('setValue')('email', 'example@gmail.com');
+    expect(rules.email.test).toHaveBeenCalled();
+    expect(rules.domain.test).toHaveBeenCalled();
+    expect(rules.password.test).not.toHaveBeenCalled();
   });
 
   test('merges new values with old ones', () => {

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<Refova /> renders given wrapped component 1`] = `
+exports[`<Refova /> renders and pass down props 1`] = `
 <Form
   changed={Array []}
   email="example@email.com"
@@ -30,7 +30,7 @@ exports[`<Refova /> renders given wrapped component 1`] = `
 />
 `;
 
-exports[`<Refova /> renders given wrapped component when options omitted 1`] = `
+exports[`<Refova /> renders without options 1`] = `
 <Form
   changed={Array []}
   errors={Object {}}
