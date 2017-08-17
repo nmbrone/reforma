@@ -51,18 +51,18 @@ For example for `values === { email: '', password: '' }` we can define next vali
 Defaul `true`. Reset Refova state when props was changed.
 
 ##### `initialValidation?: boolean`
-Default `false`. Validate [`values`] on initial mount and after reset.
+Default `false`. Validate `values` on initial mount and after reset.
 
 ##### `submit?: (payload: {}) => void`
 Default `() => {}`. Callback for `handleSubmit`.
 Payload:
-- (`values`)[#values]
-- (`changed`)[#changed]
-- (`props`)[#props]
-- (`setValue`)[#setValue]
-- (`setValues`)[#setValues]
-- (`resetError`)[#resetError]
-- (`reset`)[#reset]
+- `values`
+- `changed`
+- `props`
+- `setValue`
+- `setValues`
+- `resetError`
+- `reset`
 
 #### Injected props
 
@@ -75,7 +75,7 @@ Updates target value and validate state.
 Updates target value without validations.
 
 #### `handleSubmit: (Event) => void`
-Prevents default submit behavior. Validates [`values`] and calls [`submit`] if they are valid
+Prevents default submit behavior. Validates `values` and calls `submit` if they are valid
 
 #### `setValue: (key: string, value: any, validate? boolean, callback: Function)`
 Updates value by given key. By default will validate updated value (can be disabled by provided `validate?: false`). 
@@ -89,13 +89,13 @@ Resets one or multiple errors.
 Callback will be passed to `React.Component::setState()`.
 
 #### `validate: (keys?: string | Array.<string>, callback?: Function) => boolean`
-Validates one or multiple values. If `keys` argument omitted, then all [`values`] will be validated.
-Returns `true` if [`values`] are valid, othervise `false`
+Validates one or multiple values. If `keys` argument omitted, then all `values` will be validated.
+Returns `true` if `values` are valid, othervise `false`
 Callback will be passed to `React.Component::setState()`.
 
 #### `reset: (nextProps?: any, callback?: Function) => void`
 Resets Refova state. If `nextProps` is provided, then resets state according to new props. 
-Can be usefull when option [`resetWhenPropsChange`] is disabled, and you need to
+Can be usefull when option `resetWhenPropsChange` is disabled, and you need to
 manually reset Refova state when component receive new props.
 Callback will be passed to `React.Component::setState()`.
 
