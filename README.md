@@ -56,13 +56,13 @@ Default `false`. Validate [`values`] on initial mount and after reset.
 ##### `submit?: (payload: {}) => void`
 Default `() => {}`. Callback for `handleSubmit`.
 Payload:
-- [`values`]
-- [`changed`]
-- [`props`]
-- [`setValue`]
-- [`setValues`]
-- [`resetError`]
-- [`reset`]
+- (`values`)[#values]
+- (`changed`)[#changed]
+- (`props`)[#props]
+- (`setValue`)[#setValue]
+- (`setValues`)[#setValues]
+- (`resetError`)[#resetError]
+- (`reset`)[#reset]
 
 #### Injected props
 
