@@ -8,13 +8,16 @@ import {
   getKeyValueFromElement,
 } from './helpers';
 
+const defaultMap = () => ({});
+const noop = () => {};
+
 export default function Refova(
   {
-    mapPropsToValues = () => ({}),
+    mapPropsToValues = defaultMap,
+    submit = noop,
     validations = {},
     resetWhenPropsChange = true,
     initialValidation = false,
-    oneByOne = false,
   } = {}
 ) {
   /**
@@ -99,7 +102,7 @@ export default function Refova(
           const payload = this._getPayload(nextState);
           nextState.errors = reduceErrors(
             this.state.errors,
-            _validateValues(oneByOne ? values : nextState.values, payload)
+            _validateValues(values, payload)
           );
         }
         this.setState(nextState, cb);
@@ -107,40 +110,43 @@ export default function Refova(
 
       /**
        * Reset error/errors by given key/keys.
-       * @param {(String|String[])} key - Key/keys for which need to reset errors.
+       * @param {(String|String[])} keys - Key/keys for which need to reset errors.
+       * @param {Function} cb - The callback function for react setState.
        */
-      resetError = key => {
-        let errors = [].concat(key).reduce((acc, key) => {
+      resetError = (keys, cb) => {
+        let errors = [].concat(keys).reduce((acc, key) => {
           acc[key] = true;
           return acc;
         }, {});
         errors = reduceErrors(this.state.errors, errors);
-        this.setState({ errors });
+        this.setState({ errors }, cb);
       };
 
       /**
        * Validate all values, or only values by given keys.
        * @param {(String|String[])} [keys] - Keys for values which need to be validated.
        * If omitted, then all stored values will be validated.
+       * @param {Function} cb - The callback function for react setState.
        * @returns {Boolean} - true if all values are valid, otherwise false.
        */
-      validate = (keys = Object.keys(this.state.values)) => {
+      validate = (keys = Object.keys(this.state.values), cb) => {
         const values = [].concat(keys).reduce((acc, k) => {
           acc[k] = this.state.values[k];
           return acc;
         }, {});
         let errors = _validateValues(values, this._getPayload());
         errors = reduceErrors(this.state.errors, errors);
-        this.setState({ errors });
+        this.setState({ errors }, cb);
         return Object.keys(errors).length === 0;
       };
 
       /**
        * Reset Refova state.
        * @param {Object} [nextProps=this.props] - Component props.
+       * @param {Function} cb - The callback function for react setState.
        */
-      reset = (nextProps = this.props) => {
-        this.setState(_getStateFromProps(nextProps));
+      reset = (nextProps = this.props, cb) => {
+        this.setState(_getStateFromProps(nextProps), cb);
       };
 
       /**
@@ -163,6 +169,24 @@ export default function Refova(
         this.setValue(key, value, false);
       };
 
+      /**
+       * Helper to handle form submit
+       * @param {(SyntheticEvent|Event)} e - Event object.
+       */
+      handleSubmit = e => {
+        e.preventDefault && e.preventDefault();
+        if (this.validate())
+          submit({
+            values: this.state.values,
+            changed: this.state.changed,
+            props: this.props,
+            setValue: this.setValue,
+            setValues: this.setValues,
+            resetError: this.resetError,
+            reset: this.reset,
+          });
+      };
+
       render() {
         const hasErrors = Object.keys(this.state.errors).length > 0;
         const hasChange = this.state.changed.length > 0;
@@ -173,6 +197,7 @@ export default function Refova(
             isValid={initialValidation ? !hasErrors : hasChange && !hasErrors}
             handleChange={this.handleChange}
             handleOnlyChange={this.handleOnlyChange}
+            handleSubmit={this.handleSubmit}
             setValue={this.setValue}
             setValues={this.setValues}
             resetError={this.resetError}

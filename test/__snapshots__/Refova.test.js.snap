@@ -1,5 +1,26 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`<Refova /> Event handlers: handleSubmit calls \`submit\` with properly arguments when valid 1`] = `
+Array [
+  Object {
+    "changed": Array [],
+    "props": Object {
+      "email": "example@icloud.com",
+      "password": "qwerty",
+    },
+    "reset": [Function],
+    "resetError": [Function],
+    "setValue": [Function],
+    "setValues": [Function],
+    "values": Object {
+      "email": "example@icloud.com",
+      "password": "qwerty",
+      "username": undefined,
+    },
+  },
+]
+`;
+
 exports[`<Refova /> renders and pass down props 1`] = `
 <Form
   changed={Array []}
@@ -12,6 +33,7 @@ exports[`<Refova /> renders and pass down props 1`] = `
   }
   handleChange={[Function]}
   handleOnlyChange={[Function]}
+  handleSubmit={[Function]}
   isValid={false}
   password="qwer"
   reset={[Function]}
@@ -36,6 +58,7 @@ exports[`<Refova /> renders without options 1`] = `
   errors={Object {}}
   handleChange={[Function]}
   handleOnlyChange={[Function]}
+  handleSubmit={[Function]}
   isValid={false}
   reset={[Function]}
   resetError={[Function]}

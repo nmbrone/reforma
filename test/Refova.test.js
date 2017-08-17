@@ -23,7 +23,7 @@ describe('<Refova />', () => {
   const clearRulesMocks = () =>
     Object.values(rules).forEach(rule => rule.test.mockClear());
 
-  const Form = ({ values, handleChange, handleOnlyChange }) => {
+  const Form = ({ values, handleChange, handleOnlyChange, handleSubmit }) => {
     return (
       <form>
         <input
@@ -45,7 +45,9 @@ describe('<Refova />', () => {
           onChange={handleOnlyChange}
           onBlur={handleChange}
         />
-        <button>Submit</button>
+        <button type="submit" onClick={handleSubmit}>
+          Submit
+        </button>
       </form>
     );
   };
@@ -174,22 +176,12 @@ describe('<Refova />', () => {
     expect(wrapper.prop('isValid')).toBe(false);
   });
 
-  test('validates all stored values when some values/values being updated', () => {
-    clearRulesMocks();
-    wrapper.prop('setValue')('email', 'example@gmail.com');
-    Object.values(rules).forEach(({ test }) => {
-      expect(test).toHaveBeenCalled();
-    });
-  });
-
   test('validates only updated values', () => {
-    const WrappedForm = getWrappedForm({ oneByOne: true });
-    const wrapper = shallow(<WrappedForm email="" password="" />);
     clearRulesMocks();
-    wrapper.prop('setValue')('email', 'example@gmail.com');
-    expect(rules.email.test).toHaveBeenCalled();
-    expect(rules.domain.test).toHaveBeenCalled();
-    expect(rules.password.test).not.toHaveBeenCalled();
+    wrapper.prop('setValue')('password', 'qw');
+    expect(rules.email.test).not.toHaveBeenCalled();
+    expect(rules.domain.test).not.toHaveBeenCalled();
+    expect(rules.password.test).toHaveBeenCalled();
   });
 
   test('merges new values with old ones', () => {
@@ -391,31 +383,77 @@ describe('<Refova />', () => {
     );
   });
 
-  test('handles change event', () => {
-    const WrappedForm = getWrappedForm();
-    const wrapper = mount(
-      <WrappedForm email="example@icloud.com" password="qwerty" />
-    ).find('Form');
-    const inputWrapper = wrapper.find('[name="email"]');
-    const inputElement = inputWrapper.get(0);
-    inputElement.value = 'example';
-    inputWrapper.simulate('change');
-    expect(wrapper.prop('values')).toHaveProperty('email', 'example');
-    expect(wrapper.prop('changed')).toContain('email');
-    expect(wrapper.prop('errors')).toHaveProperty('email', rules.email.message);
-  });
+  describe('Event handlers:', () => {
+    describe('handleChange', () => {
+      test('handles change event', () => {
+        const WrappedForm = getWrappedForm();
+        const wrapper = mount(
+          <WrappedForm email="example@icloud.com" password="qwerty" />
+        ).find('Form');
+        const inputWrapper = wrapper.find('[name="email"]');
+        const inputElement = inputWrapper.get(0);
+        inputElement.value = 'example';
+        inputWrapper.simulate('change');
+        expect(wrapper.prop('values')).toHaveProperty('email', 'example');
+        expect(wrapper.prop('changed')).toContain('email');
+        expect(wrapper.prop('errors')).toHaveProperty(
+          'email',
+          rules.email.message
+        );
+      });
+    });
 
-  test('handles change event withouth validation', () => {
-    const WrappedForm = getWrappedForm();
-    const wrapper = mount(
-      <WrappedForm email="example@icloud.com" password="qwerty" />
-    ).find('Form');
-    const inputWrapper = wrapper.find('[name="password"]');
-    const inputElement = inputWrapper.get(0);
-    inputElement.value = 'qw';
-    inputWrapper.simulate('change');
-    expect(wrapper.prop('values')).toHaveProperty('password', 'qw');
-    expect(wrapper.prop('changed')).toContain('password');
-    expect(wrapper.prop('errors')).not.toHaveProperty('password');
+    describe('handleOnlyChange', () => {
+      test('handles change event withouth validation', () => {
+        const WrappedForm = getWrappedForm();
+        const wrapper = mount(
+          <WrappedForm email="example@icloud.com" password="qwerty" />
+        ).find('Form');
+        const inputWrapper = wrapper.find('[name="password"]');
+        const inputElement = inputWrapper.get(0);
+        inputElement.value = 'qw';
+        inputWrapper.simulate('change');
+        expect(wrapper.prop('values')).toHaveProperty('password', 'qw');
+        expect(wrapper.prop('changed')).toContain('password');
+        expect(wrapper.prop('errors')).not.toHaveProperty('password');
+      });
+    });
+
+    describe('handleSubmit', () => {
+      const submit = jest.fn();
+      const WrappedForm = getWrappedForm({ submit });
+
+      const simulateSubmit = (wrapper, event) => {
+        wrapper
+          .find('Form')
+          .dive()
+          .find('[type="submit"]')
+          .simulate('click', event);
+      };
+
+      beforeEach(() => {
+        submit.mockClear();
+      });
+
+      test('handles submit event', () => {
+        const preventDefault = jest.fn();
+        const wrapper = shallow(
+          <WrappedForm email="example@icloud.com" password="qwerty" />
+        );
+        simulateSubmit(wrapper, { preventDefault });
+        expect(preventDefault).toHaveBeenCalled();
+      });
+
+      test('calls `submit` with properly arguments when valid', () => {
+        const wrapper = shallow(<WrappedForm email="example" password="" />);
+        const wrapper2 = shallow(
+          <WrappedForm email="example@icloud.com" password="qwerty" />
+        );
+        simulateSubmit(wrapper, {});
+        simulateSubmit(wrapper2, {});
+        expect(submit).toHaveBeenCalledTimes(1);
+        expect(submit.mock.calls[0]).toMatchSnapshot();
+      });
+    });
   });
 });
