@@ -19,14 +19,14 @@ yarn add refova
 
 
 ## API
-### `Refova(options?)`
+#### `Refova(options?)`
 Create a Higher Order component.
 
 #### options
-##### `mapPropsToValues?: (props) => values`
+###### `mapPropsToValues?: (props) => values`
 Default `() => ({})`. Refova will transfer its results into updatable form state and make these values available to the new component as `props.values`.
 
-##### `validations?: {[key: string]: Array.<Rule>}`
+###### `validations?: {[key: string]: Array.<Rule>}`
 Default `{}`. Validation rules per each value in `values`. Rule is a simple object:
 ```
 {
@@ -47,13 +47,13 @@ For example for `values === { email: '', password: '' }` we can define next vali
 }
 ```
 
-##### `resetWhenPropsChange?: boolean`
+###### `resetWhenPropsChange?: boolean`
 Defaul `true`. Reset Refova state when props was changed.
 
-##### `initialValidation?: boolean`
+###### `initialValidation?: boolean`
 Default `false`. Validate `values` on initial mount and after reset.
 
-##### `submit?: (payload: {}) => void`
+###### `submit?: (payload: {}) => void`
 Default `() => {}`. Callback for `handleSubmit`.
 Payload:
 - `values`
@@ -66,34 +66,34 @@ Payload:
 
 #### Injected props
 
-#### `isValid: boolean`
+##### `isValid: boolean`
 
-#### `handleChange: (Event) => void`
+##### `handleChange: (Event) => void`
 Updates target value and validate state.
 
-#### `handleOnlyChange: (Event) => void`
+##### `handleOnlyChange: (Event) => void`
 Updates target value without validations.
 
-#### `handleSubmit: (Event) => void`
+##### `handleSubmit: (Event) => void`
 Prevents default submit behavior. Validates `values` and calls `submit` if they are valid
 
-#### `setValue: (key: string, value: any, validate? boolean, callback: Function)`
+##### `setValue: (key: string, value: any, validate? boolean, callback: Function)`
 Updates value by given key. By default will validate updated value (can be disabled by provided `validate?: false`). 
 Callback will be passed to `React.Component::setState()`.
 
-#### `setValues: (values: {[key: string], value: any}, validate?: boolean, callback?: Function)`
+##### `setValues: (values: {[key: string], value: any}, validate?: boolean, callback?: Function)`
 Updates multiple values and validates them. Callback will be passed to `React.Component::setState()`.
 
-#### `resetError: (keys: string | Array.<string>, callback?: Function) => void`
+##### `resetError: (keys: string | Array.<string>, callback?: Function) => void`
 Resets one or multiple errors. 
 Callback will be passed to `React.Component::setState()`.
 
-#### `validate: (keys?: string | Array.<string>, callback?: Function) => boolean`
+##### `validate: (keys?: string | Array.<string>, callback?: Function) => boolean`
 Validates one or multiple values. If `keys` argument omitted, then all `values` will be validated.
 Returns `true` if `values` are valid, othervise `false`
 Callback will be passed to `React.Component::setState()`.
 
-#### `reset: (nextProps?: any, callback?: Function) => void`
+##### `reset: (nextProps?: any, callback?: Function) => void`
 Resets Refova state. If `nextProps` is provided, then resets state according to new props. 
 Can be usefull when option `resetWhenPropsChange` is disabled, and you need to
 manually reset Refova state when component receive new props.
