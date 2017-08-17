@@ -23,10 +23,10 @@ yarn add refova
 Create a Higher Order component.
 
 #### options
-###### `mapPropsToValues?: (props) => values`
+##### `mapPropsToValues?: (props) => values`
 Default `() => ({})`. Refova will transfer its results into updatable form state and make these values available to the new component as `props.values`.
 
-###### `validations?: {[key: string]: Array.<Rule>}`
+##### `validations?: {[key: string]: Array.<Rule>}`
 Default `{}`. Validation rules per each value in `values`. Rule is a simple object:
 ```
 {
@@ -47,13 +47,13 @@ For example for `values === { email: '', password: '' }` we can define next vali
 }
 ```
 
-###### `resetWhenPropsChange?: boolean`
+##### `resetWhenPropsChange?: boolean`
 Defaul `true`. Reset Refova state when props was changed.
 
-###### `initialValidation?: boolean`
+##### `initialValidation?: boolean`
 Default `false`. Validate `values` on initial mount and after reset.
 
-###### `submit?: (payload: {}) => void`
+##### `submit?: (payload: {}) => void`
 Default `() => {}`. Callback for `handleSubmit`.
 Payload:
 - `values`
