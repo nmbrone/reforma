@@ -38,11 +38,11 @@ For example for `values === { email: '', password: '' }` we can define next vali
 ```js
 { 
   email: [
-    { message: 'Is requered', test: value => value.length > 0 },
+    { message: 'Is required', test: value => value.length > 0 },
     { message: 'Not valid email address', test: value => value.includes(@) }
   ],
   password: [
-    { message: 'Is requered', test: value => value.length > 0 }
+    { message: 'Is required', test: value => value.length > 0 }
   ]
 }
 ```
